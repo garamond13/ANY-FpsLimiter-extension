@@ -42,7 +42,7 @@
 #define SMEXT_CONF_DESCRIPTION	"An FPS limiter"
 #define SMEXT_CONF_VERSION		"1.0.0.0"
 #define SMEXT_CONF_AUTHOR		"Garamond"
-#define SMEXT_CONF_URL			""
+#define SMEXT_CONF_URL			"https://github.com/garamond13/ANY-FpsLimiter-extension"
 #define SMEXT_CONF_LOGTAG		"FPS_LIMITER"
 #define SMEXT_CONF_LICENSE		"GPL"
 #define SMEXT_CONF_DATESTRING	__DATE__
