@@ -44,7 +44,7 @@
  * @brief Sample implementation of the SDK Extension.
  * Note: Uncomment one of the pre-defined virtual functions in order to use it.
  */
-class FpsLimiter : public SDKExtension
+class FpsLimiter : public SDKExtension, public IConCommandBaseAccessor /* Needed to register new convars. */
 {
 public:
 	/**
@@ -114,6 +114,10 @@ public:
 	 */
 	//virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlen);
 #endif
+
+public:
+	// Needed to register new convars.
+	virtual bool RegisterConCommandBase(ConCommandBase *pVar);
 };
 
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_

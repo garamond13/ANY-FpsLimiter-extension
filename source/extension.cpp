@@ -30,7 +30,6 @@
  */
 
 #include "extension.h"
-#include <chrono>
 #include <thread>
 #include <CDetour/detours.h>
 
@@ -40,24 +39,25 @@ SMEXT_LINK(&g_FpsLimiter);
 
 CDetour* g_EngineFrame;
 IServerGameDLL* g_ServerGameDLL;
-CGlobalVars* gpGlobals;
+
+ConVar fps_limit("fps_limit", "1000.0");
 
 DETOUR_DECL_MEMBER0(CEngine__Frame, void)
 {
-	static std::chrono::high_resolution_clock::time_point start;
+	static double start;
 
 	// We need to account for the acctual frame time.
-	const double sleepTime = gpGlobals->interval_per_tick - std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count();
+	const double sleepTime = 1.0 / fps_limit.GetFloat() - (Plat_FloatTime() - start);
 	
 	// Precise sleep.
 	const double accountedError = 0.002; // in seconds
-	const auto sleepStart = std::chrono::high_resolution_clock::now();
+	const double sleepStart = Plat_FloatTime();
 	std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime - accountedError));
-	while (std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - sleepStart).count() < sleepTime)
+	while (Plat_FloatTime() - sleepStart < sleepTime)
 		continue;
 
 	// Call the CEngine::Frame function.
-	start = std::chrono::high_resolution_clock::now();
+	start = Plat_FloatTime();
 	DETOUR_MEMBER_CALL(CEngine__Frame)();
 }
 
@@ -87,6 +87,15 @@ void FpsLimiter::SDK_OnUnload()
 
 bool FpsLimiter::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
-	gpGlobals = ismm->GetCGlobals();
+	// Needed to register new convars.
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_pCVar, ICvar, CVAR_INTERFACE_VERSION);
+	ConVar_Register(0, this);
+	
 	return true;
+}
+
+// Needed to register new convars.
+bool FpsLimiter::RegisterConCommandBase(ConCommandBase *pVar)
+{
+	return META_REGCVAR(pVar);
 }

@@ -16,6 +16,7 @@
 			{
 				"library" "engine"
 				"windows" "\x55\x8B\xEC\x83\xEC\x38\x53\x8B\xD9"
+				"linux" "@_ZN7CEngine5FrameEv"
 			}
 		}
 	}
