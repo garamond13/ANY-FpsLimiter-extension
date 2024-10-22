@@ -30,7 +30,6 @@
  */
 
 #include "extension.h"
-#include <thread>
 #include <CDetour/detours.h>
 
 // Global singleton for extension's main interface.
@@ -38,8 +37,6 @@ FpsLimiter g_FpsLimiter;
 SMEXT_LINK(&g_FpsLimiter);
 
 CDetour* g_EngineFrame;
-IServerGameDLL* g_ServerGameDLL;
-
 ConVar fps_limit("fps_limit", "1000.0");
 
 DETOUR_DECL_MEMBER0(CEngine__Frame, void)
@@ -50,9 +47,11 @@ DETOUR_DECL_MEMBER0(CEngine__Frame, void)
 	const double sleepTime = 1.0 / fps_limit.GetFloat() - (Plat_FloatTime() - start);
 	
 	// Precise sleep.
-	const double accountedError = 0.002; // in seconds
+	const int accountedError = 2; // in miliseconds
+	int duration = static_cast<int>(sleepTime * 1000.0) - accountedError;
+	duration = duration >= 0 ? duration : 0;
 	const double sleepStart = Plat_FloatTime();
-	std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime - accountedError));
+	ThreadSleep(duration);
 	while (Plat_FloatTime() - sleepStart < sleepTime)
 		continue;
 
