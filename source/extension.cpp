@@ -48,10 +48,10 @@ DETOUR_DECL_MEMBER0(CEngine__Frame, void)
 	
 	// Precise sleep.
 	const int accountedError = 2; // in miliseconds
-	int duration = static_cast<int>(sleepTime * 1000.0) - accountedError;
-	duration = duration >= 0 ? duration : 0;
+	const int duration = static_cast<int>(sleepTime * 1000.0) - accountedError;
 	const double sleepStart = Plat_FloatTime();
-	ThreadSleep(duration);
+	if (duration > 0)
+		ThreadSleep(duration);
 	while (Plat_FloatTime() - sleepStart < sleepTime)
 		continue;
 
