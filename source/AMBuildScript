@@ -234,7 +234,7 @@ class ExtensionConfig(object):
       '/EHsc',
       '/GR-',
       '/TP',
-	  '/std:c++17',
+      '/std:c++17',
     ]
     cxx.linkflags += [
       '/MACHINE:X86',
@@ -250,7 +250,7 @@ class ExtensionConfig(object):
       'uuid.lib',
       'odbc32.lib',
       'odbccp32.lib',
-      'safetyhook.lib'
+      '../safetyhook.lib'
     ]
 
     if builder.options.opt == '1':
